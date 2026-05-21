@@ -1,0 +1,448 @@
+# Subjects Database Implementation Guide
+# Database setup scripts and configuration for Xano
+
+version: 1.0
+created: 2026-05-20
+tech_stack: Xano (Backend API), PostgreSQL
+
+## Xano Table Configuration
+
+### Table: subjects
+
+```javascript
+// Xano Table Definition - subjects
+
+Table Name: subjects
+Description: Academic subjects/disciplines managed by users
+
+Columns:
+1. id (TEXT) - Primary Key
+   - Type: String (UUID)
+   - Options: Primary Key, Generate UUID, Indexed
+   - Not Null: Yes
+
+2. user_id (TEXT) - Foreign Key
+   - Type: String (UUID)
+   - Not Null: Yes
+   - Indexed: Yes
+   - Foreign Key: references users(id)
+   - On Delete: Cascade
+
+3. name (TEXT)
+   - Type: String
+   - Not Null: Yes
+   - Max Length: 255
+   - Searchable: Yes
+
+4. code (TEXT)
+   - Type: String
+   - Max Length: 50
+   - Indexed: Yes
+   - Note: Optional; unique per user
+
+5. description (LONGTEXT)
+   - Type: Text
+   - Max Length: 5000
+   - Default: null
+
+6. professor_name (TEXT)
+   - Type: String
+   - Max Length: 255
+   - Default: null
+
+7. professor_email (TEXT)
+   - Type: String
+   - Max Length: 255
+   - Default: null
+   - Validation: Email format
+
+8. semester (TEXT)
+   - Type: String
+   - Max Length: 50
+   - Default: null
+   - Example: "2026/1", "Spring 2026"
+
+9. credits (NUMBER)
+   - Type: Integer
+   - Default: null
+   - Min: 0
+
+10. workload_hours (NUMBER)
+    - Type: Integer
+    - Default: null
+    - Min: 0
+
+11. start_date (DATE)
+    - Type: Date
+    - Default: null
+
+12. end_date (DATE)
+    - Type: Date
+    - Default: null
+    - Validation: >= start_date if both provided
+
+13. status (TEXT)
+    - Type: String (Enum)
+    - Default: "active"
+    - Allowed Values: "active", "completed", "archived", "cancelled"
+    - Indexed: Yes
+
+14. color (TEXT)
+    - Type: String
+    - Max Length: 7
+    - Default: null
+    - Validation: Hex color format (#RRGGBB)
+    - Example: "#FF5733"
+
+15. notes (LONGTEXT)
+    - Type: Text
+    - Max Length: 5000
+    - Default: null
+
+16. created_at (TIMESTAMP)
+    - Type: Timestamp
+    - Default: Current timestamp
+    - Not Null: Yes
+    - Indexed: Yes
+
+17. updated_at (TIMESTAMP)
+    - Type: Timestamp
+    - Default: Current timestamp
+    - Auto-update: Yes (update on every record change)
+    - Not Null: Yes
+```
+
+### Table: subject_permissions
+
+```javascript
+// Xano Table Definition - subject_permissions
+
+Table Name: subject_permissions
+Description: Fine-grained access control for subject sharing
+
+Columns:
+1. id (TEXT) - Primary Key
+   - Type: String (UUID)
+   - Options: Primary Key, Generate UUID, Indexed
+   - Not Null: Yes
+
+2. subject_id (TEXT) - Foreign Key
+   - Type: String (UUID)
+   - Not Null: Yes
+   - Indexed: Yes
+   - Foreign Key: references subjects(id)
+   - On Delete: Cascade
+
+3. user_id (TEXT) - Foreign Key
+   - Type: String (UUID)
+   - Not Null: Yes
+   - Indexed: Yes
+   - Foreign Key: references users(id)
+   - On Delete: Cascade
+
+4. permission_type (TEXT)
+   - Type: String (Enum)
+   - Not Null: Yes
+   - Allowed Values: "owner", "editor", "viewer", "commenter"
+   - Indexed: Yes
+   - Default: "viewer"
+
+5. granted_by (TEXT) - Foreign Key
+   - Type: String (UUID)
+   - Not Null: Yes
+   - Foreign Key: references users(id)
+   - On Delete: Restrict
+
+6. created_at (TIMESTAMP)
+   - Type: Timestamp
+   - Default: Current timestamp
+   - Not Null: Yes
+
+7. expires_at (TIMESTAMP)
+   - Type: Timestamp
+   - Default: null
+   - Optional: Yes
+   - Validation: > created_at if provided
+
+Unique Constraint:
+   - (subject_id, user_id) - One permission per user per subject
+```
+
+## Xano API Configuration
+
+### Authentication Middleware
+
+All endpoints require:
+- Header: `Authorization: Bearer {jwt_token}`
+- Valid JWT token from Xano auth system
+- Token must contain user_id claim
+
+### Response Format
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "errors": null
+}
+```
+
+Error response:
+```json
+{
+  "success": false,
+  "data": null,
+  "errors": [
+    {
+      "code": "UNAUTHORIZED",
+      "message": "User not authorized for this operation"
+    }
+  ]
+}
+```
+
+## Xano Functions (Business Logic)
+
+### Function: can_access_subject(subject_id, user_id, permission_level)
+- Purpose: Check if user can access subject
+- Parameters:
+  - subject_id (TEXT)
+  - user_id (TEXT)
+  - permission_level (TEXT): "read", "write", "delete"
+- Returns: BOOLEAN
+- Logic:
+  1. Check if user is owner (subject.user_id == user_id) → return true
+  2. Check permissions table for (subject_id, user_id)
+  3. Map permission_type to permission_level
+  4. Return boolean result
+
+### Function: get_user_subjects(user_id, filters)
+- Purpose: Get all subjects accessible to user
+- Parameters:
+  - user_id (TEXT)
+  - filters (OBJECT): { status, semester, search }
+- Returns: ARRAY of subjects
+- Logic:
+  1. Query subjects where user_id == user_id
+  2. Apply filters (status, semester)
+  3. Add search filter on name, code, professor_name
+  4. Sort by updated_at DESC
+  5. Return results
+
+### Function: update_subject_timestamp(subject_id)
+- Purpose: Update updated_at on every modification
+- Auto-called on: PUT, PATCH operations
+- Sets: updated_at = current_timestamp
+
+### Function: validate_subject_dates(start_date, end_date)
+- Purpose: Validate date consistency
+- Returns: BOOLEAN
+- Logic:
+  1. If both dates null → return true
+  2. If only start_date → return true
+  3. If only end_date → return true
+  4. If start_date > end_date → return false
+  5. Otherwise → return true
+
+## Xano Workflows (Future Automations)
+
+### Workflow: auto_complete_subjects
+- Trigger: Scheduled daily at 00:00 UTC
+- Logic:
+  1. Find all subjects with end_date < today AND status == "active"
+  2. Update status to "completed"
+  3. Log change in audit table
+
+### Workflow: expire_permissions
+- Trigger: Scheduled hourly
+- Logic:
+  1. Find all permissions with expires_at < now
+  2. Delete those permissions
+  3. Log change in audit table
+
+## Xano API Endpoints
+
+### POST /subjects
+Create a new subject
+```
+Request Body:
+{
+  "name": "string" (required),
+  "code": "string" (optional),
+  "description": "string" (optional),
+  "professor_name": "string" (optional),
+  "professor_email": "string" (optional),
+  "semester": "string" (optional),
+  "credits": "number" (optional),
+  "workload_hours": "number" (optional),
+  "start_date": "date" (optional),
+  "end_date": "date" (optional),
+  "color": "string" (optional),
+  "notes": "string" (optional)
+}
+
+Response: 201 Created
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "name": "...",
+  ...all fields...
+  "status": "active",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+### GET /subjects
+List user's subjects with filters
+```
+Query Parameters:
+- status: "active" | "completed" | "archived" | "cancelled"
+- semester: "string"
+- search: "string" (searches name, code, professor)
+- limit: number (default: 20, max: 100)
+- offset: number (default: 0)
+
+Response: 200 OK
+{
+  "total": 42,
+  "data": [
+    {
+      "id": "uuid",
+      "name": "...",
+      ...all fields...
+    }
+  ]
+}
+```
+
+### GET /subjects/{id}
+Get single subject
+```
+Response: 200 OK
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "name": "...",
+  ...all fields...
+}
+```
+
+### PUT /subjects/{id}
+Update subject
+```
+Request Body: (same as POST, but all fields optional)
+
+Response: 200 OK
+{
+  "id": "uuid",
+  ...updated fields...
+  "updated_at": "new_timestamp"
+}
+```
+
+### DELETE /subjects/{id}
+Delete subject (owner only)
+```
+Response: 204 No Content
+```
+
+### GET /subjects/{id}/permissions
+List permissions for subject (owner only)
+```
+Response: 200 OK
+{
+  "data": [
+    {
+      "id": "uuid",
+      "subject_id": "uuid",
+      "user_id": "uuid",
+      "permission_type": "editor",
+      "granted_by": "uuid",
+      "created_at": "timestamp",
+      "expires_at": "timestamp or null"
+    }
+  ]
+}
+```
+
+### POST /subjects/{id}/permissions
+Grant permission (owner only)
+```
+Request Body:
+{
+  "user_id": "uuid",
+  "permission_type": "viewer" | "commenter" | "editor",
+  "expires_at": "timestamp" (optional)
+}
+
+Response: 201 Created
+{
+  "id": "uuid",
+  "subject_id": "uuid",
+  "user_id": "uuid",
+  "permission_type": "...",
+  "granted_by": "uuid",
+  "created_at": "timestamp",
+  "expires_at": "timestamp or null"
+}
+```
+
+### DELETE /subjects/{id}/permissions/{user_id}
+Revoke permission (owner only)
+```
+Response: 204 No Content
+```
+
+## Deployment Checklist
+
+- [ ] Create subjects table in Xano
+- [ ] Create subject_permissions table in Xano
+- [ ] Create indexes as specified
+- [ ] Implement can_access_subject function
+- [ ] Implement get_user_subjects function
+- [ ] Create API endpoints
+- [ ] Add authentication middleware to all endpoints
+- [ ] Add input validation to all endpoints
+- [ ] Add error handling and logging
+- [ ] Test CRUD operations
+- [ ] Test permission system
+- [ ] Test date validations
+- [ ] Deploy to Xano
+- [ ] Document API in Postman/Swagger
+- [ ] Set up monitoring and alerts
+
+## Testing Scenarios
+
+### Basic CRUD
+- [ ] Create subject with required fields
+- [ ] Create subject with all fields
+- [ ] Read subject as owner
+- [ ] Update subject as owner
+- [ ] Delete subject as owner
+- [ ] Verify 404 on non-existent subject
+
+### Authorization
+- [ ] User cannot read subject they don't own (no permission)
+- [ ] User cannot update subject they don't own
+- [ ] User cannot delete subject they don't own
+- [ ] Owner can create permissions
+- [ ] Editor can update subject
+- [ ] Viewer cannot update subject
+- [ ] Commenter cannot delete subject
+
+### Validation
+- [ ] Invalid email format is rejected
+- [ ] Invalid hex color is rejected
+- [ ] Negative credits/hours are rejected
+- [ ] End date before start date is rejected
+- [ ] Empty name is rejected
+- [ ] Duplicate code per user is rejected
+
+### Filtering
+- [ ] Filter by status returns only matching subjects
+- [ ] Filter by semester returns only matching subjects
+- [ ] Search finds subjects by name
+- [ ] Search finds subjects by code
+- [ ] Search finds subjects by professor name
+- [ ] Multiple filters work together (AND logic)

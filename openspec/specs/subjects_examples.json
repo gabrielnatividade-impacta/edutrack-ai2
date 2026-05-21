@@ -1,0 +1,397 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-05-20",
+    "description": "Sample data and API examples for Subjects database",
+    "purpose": "Testing, documentation, and development reference"
+  },
+  "users": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Gabriel Natividade",
+      "email": "gabriel@impacta.com",
+      "role": "student"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Ana Silva",
+      "email": "ana@impacta.com",
+      "role": "student"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "name": "Dr. Carlos Santos",
+      "email": "carlos.santos@impacta.com",
+      "role": "professor"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Data Structures",
+      "code": "CS101",
+      "description": "Comprehensive study of fundamental data structures including arrays, linked lists, stacks, queues, trees, and graphs. Emphasis on implementation and time/space complexity analysis.",
+      "professor_name": "Dr. Carlos Santos",
+      "professor_email": "carlos.santos@impacta.com",
+      "semester": "2026/1",
+      "credits": 4,
+      "workload_hours": 60,
+      "start_date": "2026-02-01",
+      "end_date": "2026-06-30",
+      "status": "active",
+      "color": "#FF5733",
+      "notes": "Midterm exam on April 15. Final project due June 20.",
+      "created_at": "2026-01-15T10:30:00Z",
+      "updated_at": "2026-05-20T14:22:00Z"
+    },
+    {
+      "id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Algorithms & Complexity",
+      "code": "CS102",
+      "description": "Advanced algorithms, sorting, searching, graph algorithms, dynamic programming, and complexity analysis with focus on practical applications.",
+      "professor_name": "Dr. Maria Costa",
+      "professor_email": "maria.costa@impacta.com",
+      "semester": "2026/1",
+      "credits": 3,
+      "workload_hours": 45,
+      "start_date": "2026-02-05",
+      "end_date": "2026-07-15",
+      "status": "active",
+      "color": "#33C3FF",
+      "notes": "Lab assignments every 2 weeks. 20% of grade from participation.",
+      "created_at": "2026-01-20T09:15:00Z",
+      "updated_at": "2026-05-18T11:45:00Z"
+    },
+    {
+      "id": "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Database Design",
+      "code": "CS103",
+      "description": "Relational and non-relational database design, SQL, normalization, indexing strategies, and query optimization.",
+      "professor_name": "Dr. João Silva",
+      "professor_email": "joao.silva@impacta.com",
+      "semester": "2026/1",
+      "credits": 3,
+      "workload_hours": 45,
+      "start_date": "2026-02-10",
+      "end_date": "2026-06-20",
+      "status": "active",
+      "color": "#33FF57",
+      "notes": null,
+      "created_at": "2026-01-25T13:20:00Z",
+      "updated_at": "2026-05-15T09:30:00Z"
+    },
+    {
+      "id": "6ba7b813-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Web Development",
+      "code": "CS104",
+      "description": "Full-stack web development with modern frameworks, responsive design, and deployment strategies.",
+      "professor_name": "Dr. Pedro Oliveira",
+      "professor_email": "pedro.oliveira@impacta.com",
+      "semester": "2025/2",
+      "credits": 4,
+      "workload_hours": 60,
+      "start_date": "2025-08-01",
+      "end_date": "2025-12-20",
+      "status": "completed",
+      "color": "#FFD700",
+      "notes": "Grade: A-. Final project was an e-commerce platform.",
+      "created_at": "2025-07-10T08:00:00Z",
+      "updated_at": "2025-12-25T15:30:00Z"
+    },
+    {
+      "id": "6ba7b814-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Artificial Intelligence",
+      "code": "CS201",
+      "description": "Introduction to AI, machine learning basics, neural networks, and natural language processing.",
+      "professor_name": "Dr. Carlos Santos",
+      "professor_email": "carlos.santos@impacta.com",
+      "semester": "2026/1",
+      "credits": 4,
+      "workload_hours": 60,
+      "start_date": "2026-02-01",
+      "end_date": "2026-06-30",
+      "status": "active",
+      "color": "#9D4EDD",
+      "notes": "Optional: Research paper project worth 15% extra credit.",
+      "created_at": "2026-01-18T11:00:00Z",
+      "updated_at": "2026-05-19T16:45:00Z"
+    }
+  ],
+  "subject_permissions": [
+    {
+      "id": "7ce8b820-9dad-11d1-80b4-00c04fd430c8",
+      "subject_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440002",
+      "permission_type": "viewer",
+      "granted_by": "550e8400-e29b-41d4-a716-446655440001",
+      "created_at": "2026-05-15T10:00:00Z",
+      "expires_at": null
+    },
+    {
+      "id": "7ce8b821-9dad-11d1-80b4-00c04fd430c8",
+      "subject_id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "user_id": "550e8400-e29b-41d4-a716-446655440002",
+      "permission_type": "commenter",
+      "granted_by": "550e8400-e29b-41d4-a716-446655440001",
+      "created_at": "2026-05-10T14:30:00Z",
+      "expires_at": "2026-06-30T23:59:59Z"
+    }
+  ],
+  "api_examples": {
+    "create_subject_request": {
+      "method": "POST",
+      "url": "/api/subjects",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "body": {
+        "name": "Data Structures",
+        "code": "CS101",
+        "description": "Comprehensive study of fundamental data structures",
+        "professor_name": "Dr. Carlos Santos",
+        "professor_email": "carlos.santos@impacta.com",
+        "semester": "2026/1",
+        "credits": 4,
+        "workload_hours": 60,
+        "start_date": "2026-02-01",
+        "end_date": "2026-06-30",
+        "color": "#FF5733",
+        "notes": "Midterm exam on April 15"
+      }
+    },
+    "create_subject_response": {
+      "success": true,
+      "data": {
+        "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "user_id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Data Structures",
+        "code": "CS101",
+        "description": "Comprehensive study of fundamental data structures",
+        "professor_name": "Dr. Carlos Santos",
+        "professor_email": "carlos.santos@impacta.com",
+        "semester": "2026/1",
+        "credits": 4,
+        "workload_hours": 60,
+        "start_date": "2026-02-01",
+        "end_date": "2026-06-30",
+        "status": "active",
+        "color": "#FF5733",
+        "notes": "Midterm exam on April 15",
+        "created_at": "2026-05-20T14:30:00Z",
+        "updated_at": "2026-05-20T14:30:00Z"
+      },
+      "errors": null
+    },
+    "list_subjects_request": {
+      "method": "GET",
+      "url": "/api/subjects?status=active&semester=2026/1&limit=20&offset=0",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+    },
+    "list_subjects_response": {
+      "success": true,
+      "data": {
+        "total": 3,
+        "limit": 20,
+        "offset": 0,
+        "items": [
+          {
+            "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+            "name": "Data Structures",
+            "code": "CS101",
+            "professor_name": "Dr. Carlos Santos",
+            "semester": "2026/1",
+            "status": "active",
+            "color": "#FF5733",
+            "start_date": "2026-02-01",
+            "end_date": "2026-06-30",
+            "credits": 4
+          },
+          {
+            "id": "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+            "name": "Algorithms & Complexity",
+            "code": "CS102",
+            "professor_name": "Dr. Maria Costa",
+            "semester": "2026/1",
+            "status": "active",
+            "color": "#33C3FF",
+            "start_date": "2026-02-05",
+            "end_date": "2026-07-15",
+            "credits": 3
+          }
+        ]
+      },
+      "errors": null
+    },
+    "get_subject_request": {
+      "method": "GET",
+      "url": "/api/subjects/6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+    },
+    "get_subject_response": {
+      "success": true,
+      "data": {
+        "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "user_id": "550e8400-e29b-41d4-a716-446655440001",
+        "name": "Data Structures",
+        "code": "CS101",
+        "description": "Comprehensive study of fundamental data structures including arrays, linked lists, stacks, queues, trees, and graphs.",
+        "professor_name": "Dr. Carlos Santos",
+        "professor_email": "carlos.santos@impacta.com",
+        "semester": "2026/1",
+        "credits": 4,
+        "workload_hours": 60,
+        "start_date": "2026-02-01",
+        "end_date": "2026-06-30",
+        "status": "active",
+        "color": "#FF5733",
+        "notes": "Midterm exam on April 15. Final project due June 20.",
+        "created_at": "2026-01-15T10:30:00Z",
+        "updated_at": "2026-05-20T14:22:00Z"
+      },
+      "errors": null
+    },
+    "update_subject_request": {
+      "method": "PUT",
+      "url": "/api/subjects/6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "body": {
+        "notes": "Midterm exam moved to April 22. Final project due June 25.",
+        "color": "#FF6B6B"
+      }
+    },
+    "delete_subject_request": {
+      "method": "DELETE",
+      "url": "/api/subjects/6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+    },
+    "delete_subject_response": {
+      "success": true,
+      "data": null,
+      "errors": null
+    },
+    "grant_permission_request": {
+      "method": "POST",
+      "url": "/api/subjects/6ba7b810-9dad-11d1-80b4-00c04fd430c8/permissions",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "body": {
+        "user_id": "550e8400-e29b-41d4-a716-446655440002",
+        "permission_type": "viewer",
+        "expires_at": null
+      }
+    },
+    "grant_permission_response": {
+      "success": true,
+      "data": {
+        "id": "7ce8b820-9dad-11d1-80b4-00c04fd430c8",
+        "subject_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "user_id": "550e8400-e29b-41d4-a716-446655440002",
+        "permission_type": "viewer",
+        "granted_by": "550e8400-e29b-41d4-a716-446655440001",
+        "created_at": "2026-05-20T15:00:00Z",
+        "expires_at": null
+      },
+      "errors": null
+    },
+    "list_permissions_request": {
+      "method": "GET",
+      "url": "/api/subjects/6ba7b810-9dad-11d1-80b4-00c04fd430c8/permissions",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      }
+    },
+    "list_permissions_response": {
+      "success": true,
+      "data": [
+        {
+          "id": "7ce8b820-9dad-11d1-80b4-00c04fd430c8",
+          "subject_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+          "user_id": "550e8400-e29b-41d4-a716-446655440002",
+          "user_name": "Ana Silva",
+          "permission_type": "viewer",
+          "granted_by": "550e8400-e29b-41d4-a716-446655440001",
+          "created_at": "2026-05-15T10:00:00Z",
+          "expires_at": null
+        }
+      ],
+      "errors": null
+    },
+    "error_response_unauthorized": {
+      "success": false,
+      "data": null,
+      "errors": [
+        {
+          "code": "UNAUTHORIZED",
+          "message": "User not authorized to access this subject",
+          "details": {
+            "subject_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+            "user_id": "550e8400-e29b-41d4-a716-446655440002"
+          }
+        }
+      ]
+    },
+    "error_response_validation": {
+      "success": false,
+      "data": null,
+      "errors": [
+        {
+          "code": "VALIDATION_ERROR",
+          "message": "Invalid input",
+          "details": {
+            "field": "credits",
+            "issue": "Must be a positive integer"
+          }
+        },
+        {
+          "code": "VALIDATION_ERROR",
+          "message": "Invalid input",
+          "details": {
+            "field": "professor_email",
+            "issue": "Invalid email format"
+          }
+        }
+      ]
+    }
+  },
+  "query_examples": {
+    "get_user_subjects": {
+      "description": "Get all subjects for a user (active only)",
+      "query": "SELECT * FROM get_user_subjects('550e8400-e29b-41d4-a716-446655440001'::UUID, 'active')",
+      "note": "This function returns subjects the user owns or has permissions for"
+    },
+    "check_access": {
+      "description": "Check if user can edit a specific subject",
+      "query": "SELECT can_access_subject('6ba7b810-9dad-11d1-80b4-00c04fd430c8'::UUID, '550e8400-e29b-41d4-a716-446655440001'::UUID, 'editor')",
+      "expected_result": true
+    },
+    "upcoming_subjects": {
+      "description": "Get subjects starting in the next 7 days",
+      "query": "SELECT * FROM subjects WHERE user_id = '550e8400-e29b-41d4-a716-446655440001'::UUID AND start_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days' ORDER BY start_date"
+    },
+    "subjects_by_semester": {
+      "description": "Get all subjects for a specific semester",
+      "query": "SELECT * FROM subjects WHERE user_id = '550e8400-e29b-41d4-a716-446655440001'::UUID AND semester = '2026/1' ORDER BY name"
+    },
+    "shared_subjects": {
+      "description": "Get subjects shared with a specific user",
+      "query": "SELECT s.* FROM subjects s INNER JOIN subject_permissions sp ON s.id = sp.subject_id WHERE sp.user_id = '550e8400-e29b-41d4-a716-446655440002'::UUID AND (sp.expires_at IS NULL OR sp.expires_at > CURRENT_TIMESTAMP)"
+    }
+  }
+}

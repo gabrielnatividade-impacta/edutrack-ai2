@@ -1,0 +1,148 @@
+# Subjects Database Specification
+# Creates and manages academic subjects with user ownership and access control
+
+version: 1.0
+created: 2026-05-20
+status: approved
+
+## Overview
+This specification defines the database structure for managing academic subjects (disciplinas),
+allowing users to register, organize, and manage their courses with proper ownership controls
+and future automation capabilities.
+
+## Database Tables
+
+### subjects
+Stores all academic subjects/disciplines registered by users.
+
+**Fields:**
+- `id` (UUID) - Primary key, auto-generated
+- `user_id` (UUID) - Foreign key to users table - who owns this subject
+- `name` (String, required) - Subject/course name (e.g., "Data Structures")
+- `code` (String, optional) - Course code (e.g., "CS101")
+- `description` (Text, optional) - Detailed description of the subject
+- `professor_name` (String, optional) - Name of the professor/instructor
+- `professor_email` (String, optional) - Contact email of the professor
+- `semester` (String, optional) - Academic semester (e.g., "2026/1", "Spring 2026")
+- `credits` (Integer, optional) - Number of academic credits
+- `workload_hours` (Integer, optional) - Total workload in hours
+- `start_date` (Date, optional) - When the subject starts
+- `end_date` (Date, optional) - When the subject ends
+- `status` (Enum, default: "active") - Values: "active", "completed", "archived", "cancelled"
+- `color` (String, optional) - Hex color for UI organization (e.g., "#FF5733")
+- `notes` (Text, optional) - General notes about the subject
+- `created_at` (Timestamp) - Auto-generated creation timestamp
+- `updated_at` (Timestamp) - Auto-updated modification timestamp
+
+**Indexes:**
+- PRIMARY: id
+- FOREIGN KEY: user_id -> users.id (with cascade delete)
+- INDEX: user_id (for quick filtering by owner)
+- INDEX: status (for filtering active subjects)
+- UNIQUE INDEX: (user_id, code) - Prevent duplicate codes per user (if code provided)
+
+**Constraints:**
+- Not null: id, user_id, name, created_at, updated_at
+- Max length: name (255), code (50), professor_name (255), professor_email (255)
+- Max length: semester (50), color (7 for hex), status (20)
+- Check: start_date <= end_date (if both provided)
+- Check: workload_hours >= 0, credits >= 0
+
+### subject_permissions
+Manages fine-grained access control for subjects (for future collaboration features).
+
+**Fields:**
+- `id` (UUID) - Primary key, auto-generated
+- `subject_id` (UUID) - Foreign key to subjects.id
+- `user_id` (UUID) - User granted permission
+- `permission_type` (Enum) - Values: "owner", "editor", "viewer", "commenter"
+- `granted_by` (UUID) - User who granted the permission
+- `created_at` (Timestamp) - When permission was granted
+- `expires_at` (Timestamp, optional) - When permission expires
+
+**Indexes:**
+- PRIMARY: id
+- FOREIGN KEY: subject_id -> subjects.id (with cascade delete)
+- FOREIGN KEY: user_id -> users.id (with cascade delete)
+- UNIQUE INDEX: (subject_id, user_id) - Only one permission per user per subject
+- INDEX: permission_type
+
+**Constraints:**
+- Not null: id, subject_id, user_id, permission_type, granted_by, created_at
+- Check: expires_at > created_at (if provided)
+
+## API Endpoints (Future Implementation)
+
+### Subject CRUD Operations
+- `POST /api/subjects` - Create new subject
+- `GET /api/subjects` - List user's subjects (with optional filters)
+- `GET /api/subjects/:id` - Get subject details
+- `PUT /api/subjects/:id` - Update subject
+- `DELETE /api/subjects/:id` - Delete subject
+
+### Filtering & Sorting
+- Filter by status, semester, professor_name
+- Sort by created_at, updated_at, name, start_date
+- Pagination support
+
+### Permissions (Future)
+- `GET /api/subjects/:id/permissions` - List subject permissions
+- `POST /api/subjects/:id/permissions` - Grant permission
+- `DELETE /api/subjects/:id/permissions/:user_id` - Revoke permission
+
+## Automations (Future)
+
+### Auto-Archive Subjects
+- When end_date passes and status is "active", automatically change to "completed"
+- Scheduled daily at 00:00 UTC
+
+### Permission Expiration
+- When expires_at is reached, automatically revoke the permission
+- Scheduled hourly
+
+### Notifications
+- Notify user when subject status changes
+- Notify user when a permission is granted/revoked
+
+## Authentication & Authorization
+
+### Rules
+1. User can only see/manage subjects they own or have explicit permissions for
+2. Only owner can delete a subject
+3. Only owner can modify subject details (unless editor permission is granted)
+4. Owner can grant/revoke permissions to other users
+5. All operations require valid JWT token in Authorization header
+
+## Data Validation
+
+### Subject Creation
+```
+- name: required, non-empty, max 255 chars
+- code: optional, max 50 chars, alphanumeric + special chars allowed
+- workload_hours: optional, must be >= 0
+- credits: optional, must be >= 0
+- start_date, end_date: optional, ISO 8601 format, start <= end
+- color: optional, must be valid hex color (#RRGGBB)
+- status: must be one of allowed enum values
+- professor_email: optional, must be valid email format
+```
+
+## Related Entities
+
+- **Users**: Each subject must have a valid user_id pointing to an existing user
+- **Tasks** (future): Tasks will reference subjects
+- **Grades** (future): Grades will be associated with subjects
+- **Files/Materials** (future): Study materials will be attached to subjects
+
+## Migration Path
+1. Create tables with initial fields
+2. Add indexes for performance
+3. Implement API endpoints with auth middleware
+4. Add audit logging for all modifications
+5. Implement automations and scheduled tasks
+
+## Notes
+- All timestamps in UTC
+- Soft deletes not used; physical deletion with cascade rules
+- Row-level security will be enforced at API level
+- Future: Consider adding categories/tags for subject organization

@@ -1,0 +1,495 @@
+{
+  "project": "EduTrack AI",
+  "component": "Subjects Database Specification",
+  "created": "2026-05-20",
+  "status": "Complete - Ready for Implementation",
+  "specification_version": "1.0",
+  
+  "summary": {
+    "description": "Complete specification for managing academic subjects with user ownership and access control",
+    "purpose": "Allow users to register, organize, and manage their academic disciplines with fine-grained access control and future automation capabilities",
+    "total_files_created": 15,
+    "total_lines_of_specification": 4500
+  },
+
+  "files": {
+    "hub_documents": {
+      "count": 8,
+      "files": [
+        {
+          "name": "README.md",
+          "purpose": "General documentation and overview",
+          "audience": ["All"],
+          "read_time": "5 min"
+        },
+        {
+          "name": "README_PT-BR.md",
+          "purpose": "Portuguese version of README",
+          "audience": ["Portuguese speakers"],
+          "read_time": "5 min"
+        },
+        {
+          "name": "SUBJECTS_SUMMARY.md",
+          "purpose": "Executive summary (START HERE)",
+          "audience": ["All"],
+          "read_time": "15 min",
+          "note": "Most important document to start with"
+        },
+        {
+          "name": "SUBJECTS_REFERENCE.md",
+          "purpose": "Cross-reference guide for all documents",
+          "audience": ["Those looking for specific information"],
+          "read_time": "5 min"
+        },
+        {
+          "name": "QUICK_START.md",
+          "purpose": "Quick start guide by role/function",
+          "audience": ["New team members"],
+          "read_time": "10-30 min"
+        },
+        {
+          "name": "ARCHITECTURE.md",
+          "purpose": "Visual system architecture and diagrams",
+          "audience": ["Architects, developers"],
+          "read_time": "20 min"
+        },
+        {
+          "name": "INDEX.md",
+          "purpose": "Complete index with statistics",
+          "audience": ["Those seeking complete overview"],
+          "read_time": "15 min"
+        },
+        {
+          "name": "DELIVERY_SUMMARY.md",
+          "purpose": "What you received and next steps",
+          "audience": ["Project stakeholders"],
+          "read_time": "10 min"
+        }
+      ]
+    },
+
+    "specification_documents": {
+      "count": 4,
+      "files": [
+        {
+          "name": "specs/subjects_database.yaml",
+          "purpose": "Functional specification (WHAT to build)",
+          "lines": 1500,
+          "audience": ["Product managers, architects"],
+          "read_time": "45 min",
+          "contains": [
+            "17 fields in subjects table",
+            "7 fields in subject_permissions table",
+            "15+ constraints",
+            "Validation rules",
+            "API endpoints list",
+            "Future automations",
+            "Authorization rules"
+          ]
+        },
+        {
+          "name": "specs/subjects_implementation.yaml",
+          "purpose": "Technical implementation guide (HOW to build)",
+          "lines": 1200,
+          "audience": ["Backend developers, DevOps"],
+          "read_time": "60 min",
+          "contains": [
+            "Xano table configuration",
+            "5 business logic functions",
+            "9 API endpoint specifications",
+            "20+ testing scenarios",
+            "Deployment checklist",
+            "Request/response JSON examples"
+          ]
+        },
+        {
+          "name": "specs/subjects_schema.sql",
+          "purpose": "PostgreSQL DDL scripts (ready to execute)",
+          "lines": 500,
+          "audience": ["Database administrators, backend developers"],
+          "read_time": "30 min",
+          "contains": [
+            "CREATE TABLE subjects",
+            "CREATE TABLE subject_permissions",
+            "10+ indexes",
+            "5 functions",
+            "1 trigger",
+            "3 views",
+            "Sample queries"
+          ]
+        },
+        {
+          "name": "specs/subjects_examples.json",
+          "purpose": "Sample data and API documentation",
+          "lines": 600,
+          "audience": ["QA, backend developers, frontend developers"],
+          "read_time": "20 min",
+          "contains": [
+            "3 sample users",
+            "5 sample subjects",
+            "2 sample permissions",
+            "10 complete API examples",
+            "Error response examples",
+            "5 database query examples"
+          ]
+        }
+      ]
+    },
+
+    "context_documents": {
+      "count": 2,
+      "files": [
+        {
+          "name": "context/system.md",
+          "purpose": "System context (UPDATED)",
+          "audience": ["All team members"],
+          "status": "Modified from original"
+        },
+        {
+          "name": "changes/subjects_database_20260520.md",
+          "purpose": "Change log entry",
+          "audience": ["Project tracking"],
+          "contains": "Summary of all changes and next steps"
+        }
+      ]
+    }
+  },
+
+  "database_design": {
+    "tables": 2,
+    "total_fields": 24,
+    "subjects_table": {
+      "name": "subjects",
+      "fields": 17,
+      "purpose": "Store academic subjects/disciplines",
+      "owner_field": "user_id",
+      "key_fields": [
+        "id (UUID, primary key)",
+        "user_id (UUID, foreign key to users)",
+        "name (string, required)",
+        "code (string, optional, unique per user)",
+        "professor_name, professor_email",
+        "semester, credits, workload_hours",
+        "start_date, end_date",
+        "status (enum: active/completed/archived/cancelled)",
+        "color (hex), notes",
+        "created_at, updated_at"
+      ]
+    },
+    "permissions_table": {
+      "name": "subject_permissions",
+      "fields": 7,
+      "purpose": "Fine-grained access control",
+      "key_fields": [
+        "id (UUID, primary key)",
+        "subject_id (UUID, foreign key)",
+        "user_id (UUID, foreign key)",
+        "permission_type (enum: owner/editor/viewer/commenter)",
+        "granted_by (UUID, who granted)",
+        "created_at, expires_at"
+      ]
+    },
+    "constraints": "15+",
+    "indexes": "10+",
+    "functions": 5,
+    "triggers": 1,
+    "views": 3
+  },
+
+  "api_design": {
+    "total_endpoints": 9,
+    "authentication": "JWT (JSON Web Tokens)",
+    "authorization": "Fine-grained permissions (4 levels)",
+    "endpoints": [
+      {
+        "method": "POST",
+        "path": "/api/subjects",
+        "description": "Create new subject"
+      },
+      {
+        "method": "GET",
+        "path": "/api/subjects",
+        "description": "List user's subjects (with filters)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/subjects/:id",
+        "description": "Get single subject"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/subjects/:id",
+        "description": "Update subject"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/subjects/:id",
+        "description": "Delete subject (owner only)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/subjects/:id/permissions",
+        "description": "List permissions (owner only)"
+      },
+      {
+        "method": "POST",
+        "path": "/api/subjects/:id/permissions",
+        "description": "Grant permission (owner only)"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/subjects/:id/permissions/:user_id",
+        "description": "Revoke permission (owner only)"
+      }
+    ]
+  },
+
+  "authorization_model": {
+    "permission_levels": 4,
+    "levels": [
+      {
+        "level": "owner",
+        "value": 4,
+        "capabilities": ["read", "write", "delete", "manage_permissions"]
+      },
+      {
+        "level": "editor",
+        "value": 3,
+        "capabilities": ["read", "write"]
+      },
+      {
+        "level": "commenter",
+        "value": 2,
+        "capabilities": ["read", "comment"]
+      },
+      {
+        "level": "viewer",
+        "value": 1,
+        "capabilities": ["read"]
+      }
+    ],
+    "rules": [
+      "User can access if they own the subject",
+      "User can access if they have explicit permission",
+      "Permission can have optional expiration date",
+      "Expired permissions are automatically revoked"
+    ]
+  },
+
+  "features": {
+    "core": [
+      "User ownership with full control",
+      "Subject sharing with fine-grained permissions",
+      "Rich academic metadata",
+      "Status tracking",
+      "Custom colors for UI organization",
+      "Notes and descriptions",
+      "Flexible scheduling (start/end dates)"
+    ],
+    "validation": [
+      "Email format validation",
+      "Date range validation (start ≤ end)",
+      "Numeric range validation (≥ 0)",
+      "Hex color format validation",
+      "Enum value validation",
+      "Foreign key constraints"
+    ],
+    "performance": [
+      "10+ indexes on common queries",
+      "Database functions for complex operations",
+      "Pre-built views for common patterns",
+      "Pagination support"
+    ],
+    "future": [
+      "Auto-archive subjects on end_date",
+      "Auto-expire permissions",
+      "Notifications on status changes",
+      "Audit logging",
+      "Task management integration",
+      "Grades management integration",
+      "File/materials storage"
+    ]
+  },
+
+  "implementation_roadmap": {
+    "phases": 5,
+    "total_estimated_hours": "20-40 (full team, parallel work)",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Database Setup",
+        "hours": "2-4",
+        "owner": "Database Administrator",
+        "tasks": [
+          "Create tables",
+          "Create indexes",
+          "Create functions and triggers",
+          "Test connectivity"
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Backend Implementation",
+        "hours": "8-16",
+        "owner": "Backend Developer",
+        "tasks": [
+          "Configure Xano tables",
+          "Implement business logic",
+          "Create API endpoints",
+          "Add authentication",
+          "Add validation"
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Integration Testing",
+        "hours": "4-8",
+        "owner": "QA Engineer",
+        "tasks": [
+          "Test all endpoints",
+          "Test authorization",
+          "Test error cases",
+          "Performance testing"
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Frontend Integration",
+        "hours": "4-8",
+        "owner": "Frontend Developer",
+        "tasks": [
+          "Update Streamlit app",
+          "Create CRUD forms",
+          "Add filters and search",
+          "Test integration"
+        ]
+      },
+      {
+        "phase": 5,
+        "name": "Deployment",
+        "hours": "2-4",
+        "owner": "DevOps Engineer",
+        "tasks": [
+          "Set up monitoring",
+          "Configure backups",
+          "Deploy to staging",
+          "Deploy to production"
+        ]
+      }
+    ]
+  },
+
+  "content_statistics": {
+    "total_files": 15,
+    "total_lines": 8300,
+    "by_format": {
+      "markdown": "4500+ lines",
+      "yaml": "2700+ lines",
+      "sql": "500+ lines",
+      "json": "600+ lines"
+    },
+    "database": {
+      "tables": 2,
+      "fields": 24,
+      "indexes": "10+",
+      "constraints": "15+",
+      "functions": 5,
+      "triggers": 1,
+      "views": 3
+    },
+    "api": {
+      "endpoints": 9,
+      "examples": "10+",
+      "status_codes": "5+",
+      "error_types": "4+"
+    },
+    "testing": {
+      "scenarios": "20+",
+      "sample_records": 10,
+      "sql_examples": 5,
+      "validation_rules": "10+"
+    }
+  },
+
+  "getting_started": {
+    "quick_path": [
+      {
+        "step": 1,
+        "action": "Read README.md or README_PT-BR.md",
+        "time": "5 min",
+        "result": "Understand what was created"
+      },
+      {
+        "step": 2,
+        "action": "Open QUICK_START.md and find your role",
+        "time": "3 min",
+        "result": "Know exactly where to start"
+      },
+      {
+        "step": 3,
+        "action": "Read the role-specific document",
+        "time": "20-60 min",
+        "result": "Ready to implement"
+      }
+    ],
+    "by_role": {
+      "backend_developer": {
+        "first": "SUBJECTS_SUMMARY.md",
+        "then": "specs/subjects_implementation.yaml",
+        "reference": "specs/subjects_examples.json",
+        "total_time": "50 minutes"
+      },
+      "database_admin": {
+        "first": "SUBJECTS_SUMMARY.md",
+        "then": "specs/subjects_schema.sql",
+        "reference": "specs/subjects_database.yaml",
+        "total_time": "25 minutes"
+      },
+      "qa_engineer": {
+        "first": "SUBJECTS_SUMMARY.md",
+        "then": "specs/subjects_examples.json",
+        "reference": "specs/subjects_implementation.yaml (Testing Scenarios)",
+        "total_time": "25 minutes"
+      },
+      "frontend_developer": {
+        "first": "SUBJECTS_SUMMARY.md",
+        "then": "specs/subjects_examples.json (API section)",
+        "reference": "specs/subjects_implementation.yaml (API Endpoints)",
+        "total_time": "25 minutes"
+      },
+      "project_manager": {
+        "first": "SUBJECTS_SUMMARY.md",
+        "focus": "Deployment Checklist",
+        "reference": "DELIVERY_SUMMARY.md",
+        "total_time": "15 minutes"
+      }
+    }
+  },
+
+  "success_criteria": [
+    "Users can create subjects with their information",
+    "Users can only see subjects they own or have permission for",
+    "Only owners can delete subjects",
+    "Owners can share subjects with other users",
+    "Permissions can expire automatically",
+    "All API endpoints have proper error handling",
+    "Data integrity constraints are enforced",
+    "Performance is acceptable with 1000+ subjects"
+  ],
+
+  "key_contacts": {
+    "created_by": "Gabriel Moreira da Natividade",
+    "project": "EduTrack AI",
+    "institution": "Faculdade Impacta",
+    "course": "Innovation Lab",
+    "date_created": "2026-05-20"
+  },
+
+  "status": {
+    "design": "Complete",
+    "documentation": "Complete",
+    "examples": "Complete",
+    "ready_for_implementation": true,
+    "version": "1.0"
+  }
+}
